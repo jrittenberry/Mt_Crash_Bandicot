@@ -1,54 +1,43 @@
-from banking_pkg.account import show_balance, withdraw, logout, deposit
+from donations_pkg.homepage import show_homepage, donate, show_donations
+from donations_pkg.user import login, register
 
 
-def atm_menu(name):
-    print("")
-    print("          === Automated Teller Machine ===          ")
-    print("User: " + name)
-    print("------------------------------------------")
-    print("| 1.    Balance     | 2.    Deposit      |")
-    print("------------------------------------------")
-    print("------------------------------------------")
-    print("| 3.    Withdraw    | 4.    Logout       |")
-    print("------------------------------------------")
+database = {
+    "admin": "password123"
+}
 
 
-print("          === Automated Teller Machine ===          ")
+donations = []
 
-name = input("Enter name to register: ")
-
-pin = input("Enter PIN: ")
-
-balance = 0
-
-print(name, "has a been registered with a starting balance of $", str(balance))
+authorized_user = ""
 
 while True:
-    print("          === Automated Teller Machine ===          ")
-    print("LOGIN")
-    name_to_validate = input("Enter name: ")
-    pin_to_validate = input("Enter PIN: ")
-    if name == name_to_validate and pin == pin_to_validate:
-        print("Login Succesful!")
-        break
+    show_homepage()
+
+    if authorized_user == "":
+        print("You must be logged in to donate.")
     else:
-        print("Invalid Credentials!")
-        continue
-
-while True:
-    atm_menu(name)
+        print("Logged in as: ", authorized_user)
     option = input("Choose an option: ")
     if option == "1":
-        print("Current Balance: $", balance)
+        username = input("Username: ")
+        password = input("Password: ")
+        authorized_user = login(database, username, password)
     elif option == "2":
-        balance = deposit(balance)
-        print("Current Balance: $", balance)
+        username = input("Username: ")
+        password = input("Password: ")
+        authorized_user = register(database, username)
+        if authorized_user != "":
+            database[username] = password
     elif option == "3":
-        balance = withdraw(balance)
-        print("Current Balance: $", balance)
+        if authorized_user == "":
+            print("You are not logged in ")
+        else:
+            donation_string = donate(authorized_user)
+            donations += donation_string
     elif option == "4":
-        logout(name)
-        break
+        show_donations(donations)
+    elif option == "5":
+        print("Goodbye")
     else:
-        print("Error. Try inputing a valid response.")
-        continue
+        print("Not a valid repsonse, try entering a valid response.")
